@@ -1,0 +1,19 @@
+{
+  "budget": 2,
+  "bad_logical_code": "E_BAD_LOGICAL",
+  "bad_phys_code": "E_BAD_PHYS",
+  "bad_count_code": "E_BAD_COUNT",
+  "dup_use_code": "E_DUP_USE",
+  "no_block_code": "E_NO_BLOCK",
+  "event_error_code": "E_BAD_EVENT",
+  "state": { "map": [], "free": [], "bad": [], "pending": [], "moves": 0, "ledger": [], "applied": [] },
+  "events": [
+    { "id": 1, "kind": "grow", "count": 3 },
+    { "id": 2, "kind": "use", "logical": 5 },
+    { "id": 3, "kind": "use", "logical": 7 },
+    { "id": 4, "kind": "bad", "physical": 2 },
+    { "id": 5, "kind": "use", "logical": 9 },
+    { "id": 6, "kind": "bad", "physical": 3 },
+    { "id": 7, "kind": "grow", "count": 1 }
+  ]
+}

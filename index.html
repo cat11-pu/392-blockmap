@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>blockmap · 看板</title>
+<style>
+:root{--accent:#1f7a3d;--soft:#dcf3e2}
+body{margin:0;background:#eef2f8;color:#1e2733;font-family:system-ui,sans-serif}
+header{padding:18px 26px 8px}
+h1{font-size:18px;margin:0 0 4px}
+.hint{color:#5d6b7e;font-size:13px;margin:0}
+#controls{display:flex;flex-wrap:wrap;gap:10px;padding:12px 26px 2px}
+#controls button{font:inherit;padding:8px 14px;border-radius:999px;border:1px solid #cfd8e6;background:#fff;cursor:pointer;box-shadow:0 1px 2px rgba(30,39,51,.06)}
+#controls button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+#controls input{font:inherit;padding:7px 12px;border-radius:999px;border:1px solid #cfd8e6;width:96px}
+#controls label{font-size:12px;color:#5d6b7e;align-self:center}
+#stage{display:flex;gap:14px;padding:16px 26px;min-height:300px;align-items:flex-start;overflow:auto}
+#stage .col{background:#fff;border-radius:14px;padding:12px;min-width:190px;flex:1;box-shadow:0 2px 6px rgba(30,39,51,.07)}
+#stage .col h3{font-size:13px;margin:0 0 8px;color:#5d6b7e;font-weight:600}
+#stage .card{border:1px solid #e5eaf3;border-radius:10px;padding:9px 11px;margin-bottom:8px;font-size:13px;background:#fbfcfe;cursor:pointer}
+#stage .card.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--soft)}
+#stage .chip{border-radius:999px;padding:2px 9px;font-size:12px;background:#eef2f8;color:#41506a}
+#stage .chip.ok{background:var(--soft);color:#16324f}
+#stage .chip.bad{background:#fbe3e1;color:#8a2018}
+#stage .row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+#stage .bar{flex:1;height:16px;border-radius:999px;background:#e8eef7;position:relative}
+#stage .bar i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:999px}
+#legend{margin:0 26px;padding:10px 14px;background:#fff;border-radius:12px;font-size:12px;color:#41506a}
+pre#out{margin:14px 26px;background:#1e2733;color:#e7eefb;border-radius:12px;padding:12px;font-size:12px;overflow:auto}
+#log{margin:0 26px;color:#5d6b7e;font-size:12px}
+details{padding:14px 26px 30px;color:#5d6b7e;font-size:13px}
+textarea{width:100%;height:120px;font-family:ui-monospace,monospace;font-size:12px;border:1px solid #cfd8e6;border-radius:12px;padding:10px}
+#reload{font:inherit;margin-top:8px;padding:7px 14px;border-radius:999px;border:1px solid #cfd8e6;background:#fff;cursor:pointer}
+</style></head>
+<body>
+<header><h1>blockmap · 看板</h1><p class="hint">点按钮改处理预算、减事件，右边看每条逻辑块落在哪个物理块、哪些块坏了、哪些逻辑块还没块可用。</p></header>
+<section id="controls"></section>
+<section id="stage"></section>
+<div id="legend"></div>
+<pre id="out">还没跑</pre>
+<div id="log"></div>
+
+<details>
+  <summary>场景数据（可以直接改，改完点重新载入）</summary>
+  <textarea id="input">{
+  "budget": 2,
+  "bad_logical_code": "E_BAD_LOGICAL",
+  "bad_phys_code": "E_BAD_PHYS",
+  "bad_count_code": "E_BAD_COUNT",
+  "dup_use_code": "E_DUP_USE",
+  "no_block_code": "E_NO_BLOCK",
+  "event_error_code": "E_BAD_EVENT",
+  "state": { "map": [], "free": [], "bad": [], "pending": [], "moves": 0, "ledger": [], "applied": [] },
+  "events": [
+    { "id": 1, "kind": "grow", "count": 3 },
+    { "id": 2, "kind": "use", "logical": 5 },
+    { "id": 3, "kind": "use", "logical": 7 },
+    { "id": 4, "kind": "bad", "physical": 2 },
+    { "id": 5, "kind": "use", "logical": 9 },
+    { "id": 6, "kind": "bad", "physical": 3 },
+    { "id": 7, "kind": "grow", "count": 1 }
+  ]
+}</textarea>
+  <button id="reload">重新载入场景</button>
+</details>
+<script type="module">
+import { mount } from "./ui.js";
+
+const parts = {
+  controls: document.getElementById("controls"),
+  stage: document.getElementById("stage"),
+  out: document.getElementById("out"),
+  legend: document.getElementById("legend"),
+  log: document.getElementById("log")
+};
+
+function start(spec) {
+  try {
+    mount(spec, parts);
+  } catch (error) {
+    parts.out.textContent = String(error && error.stack ? error.stack : error);
+  }
+}
+
+document.getElementById("reload").addEventListener("click", function () {
+  try {
+    start(JSON.parse(document.getElementById("input").value));
+  } catch (error) {
+    parts.out.textContent = String(error);
+  }
+});
+
+start(JSON.parse(document.getElementById("input").value));
+</script>
+</body></html>
